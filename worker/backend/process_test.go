@@ -6,7 +6,7 @@ import (
 
 	"code.cloudfoundry.org/garden"
 	"github.com/concourse/concourse/worker/backend"
-	"github.com/concourse/concourse/worker/backend/libcontainerd/libcontainerdfakes"
+	"github.com/concourse/concourse/worker/backend/containerdadapter/containerdadapterfakes"
 	"github.com/containerd/containerd"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
@@ -16,15 +16,15 @@ type ProcessSuite struct {
 	suite.Suite
 	*require.Assertions
 
-	io                *libcontainerdfakes.FakeIO
-	containerdProcess *libcontainerdfakes.FakeProcess
+	io                *containerdadapterfakes.FakeIO
+	containerdProcess *containerdadapterfakes.FakeProcess
 	ch                chan containerd.ExitStatus
 	process           *backend.Process
 }
 
 func (s *ProcessSuite) SetupTest() {
-	s.io = new(libcontainerdfakes.FakeIO)
-	s.containerdProcess = new(libcontainerdfakes.FakeProcess)
+	s.io = new(containerdadapterfakes.FakeIO)
+	s.containerdProcess = new(containerdadapterfakes.FakeProcess)
 	s.ch = make(chan containerd.ExitStatus, 1)
 
 	s.process = backend.NewProcess(s.containerdProcess, s.ch)

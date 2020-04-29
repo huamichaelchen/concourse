@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/concourse/concourse/worker/backend"
-	"github.com/concourse/concourse/worker/backend/libcontainerd/libcontainerdfakes"
+	"github.com/concourse/concourse/worker/backend/containerdadapter/containerdadapterfakes"
 	"github.com/containerd/containerd"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
@@ -19,7 +19,7 @@ type ProcessKillerSuite struct {
 	*require.Assertions
 
 	signal syscall.Signal
-	proc   *libcontainerdfakes.FakeProcess
+	proc   *containerdadapterfakes.FakeProcess
 	killer backend.ProcessKiller
 
 	goodEnoughTimeout time.Duration
@@ -27,7 +27,7 @@ type ProcessKillerSuite struct {
 }
 
 func (s *ProcessKillerSuite) SetupTest() {
-	s.proc = new(libcontainerdfakes.FakeProcess)
+	s.proc = new(containerdadapterfakes.FakeProcess)
 	s.killer = backend.NewProcessKiller()
 
 	s.signal = 142

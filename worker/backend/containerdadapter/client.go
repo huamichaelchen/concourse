@@ -1,4 +1,4 @@
-package libcontainerd
+package containerdadapter
 
 import (
 	"context"

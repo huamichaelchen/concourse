@@ -6,7 +6,7 @@ import (
 
 	"github.com/concourse/concourse/worker/backend"
 	"github.com/concourse/concourse/worker/backend/backendfakes"
-	"github.com/concourse/concourse/worker/backend/libcontainerd/libcontainerdfakes"
+	"github.com/concourse/concourse/worker/backend/containerdadapter/containerdadapterfakes"
 	"github.com/opencontainers/runtime-spec/specs-go"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
@@ -132,14 +132,14 @@ func (s *CNINetworkSuite) TestAddNilTask() {
 
 func (s *CNINetworkSuite) TestAddSetupErrors() {
 	s.cni.SetupReturns(nil, errors.New("setup-err"))
-	task := new(libcontainerdfakes.FakeTask)
+	task := new(containerdadapterfakes.FakeTask)
 
 	err := s.network.Add(context.Background(), task)
 	s.EqualError(errors.Unwrap(err), "setup-err")
 }
 
 func (s *CNINetworkSuite) TestAdd() {
-	task := new(libcontainerdfakes.FakeTask)
+	task := new(containerdadapterfakes.FakeTask)
 	task.PidReturns(123)
 	task.IDReturns("id")
 
@@ -159,14 +159,14 @@ func (s *CNINetworkSuite) TestRemoveNilTask() {
 
 func (s *CNINetworkSuite) TestRemoveSetupErrors() {
 	s.cni.RemoveReturns(errors.New("remove-err"))
-	task := new(libcontainerdfakes.FakeTask)
+	task := new(containerdadapterfakes.FakeTask)
 
 	err := s.network.Remove(context.Background(), task)
 	s.EqualError(errors.Unwrap(err), "remove-err")
 }
 
 func (s *CNINetworkSuite) TestRemove() {
-	task := new(libcontainerdfakes.FakeTask)
+	task := new(containerdadapterfakes.FakeTask)
 	task.PidReturns(123)
 	task.IDReturns("id")
 

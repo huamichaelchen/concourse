@@ -9,7 +9,7 @@ import (
 	"code.cloudfoundry.org/garden/gardenfakes"
 	"github.com/concourse/concourse/worker/backend"
 	"github.com/concourse/concourse/worker/backend/backendfakes"
-	"github.com/concourse/concourse/worker/backend/libcontainerd/libcontainerdfakes"
+	"github.com/concourse/concourse/worker/backend/containerdadapter/containerdadapterfakes"
 	"github.com/containerd/containerd"
 	"github.com/containerd/containerd/errdefs"
 	"github.com/stretchr/testify/require"
@@ -21,14 +21,14 @@ type BackendSuite struct {
 	*require.Assertions
 
 	backend backend.Backend
-	client  *libcontainerdfakes.FakeClient
+	client  *containerdadapterfakes.FakeClient
 	network *backendfakes.FakeNetwork
 	userns  *backendfakes.FakeUserNamespace
 	killer  *backendfakes.FakeKiller
 }
 
 func (s *BackendSuite) SetupTest() {
-	s.client = new(libcontainerdfakes.FakeClient)
+	s.client = new(containerdadapterfakes.FakeClient)
 	s.killer = new(backendfakes.FakeKiller)
 	s.network = new(backendfakes.FakeNetwork)
 	s.userns = new(backendfakes.FakeUserNamespace)
@@ -102,7 +102,7 @@ func (s *BackendSuite) TestCreateWithNewContainerFailure() {
 }
 
 func (s *BackendSuite) TestCreateContainerNewTaskFailure() {
-	fakeContainer := new(libcontainerdfakes.FakeContainer)
+	fakeContainer := new(containerdadapterfakes.FakeContainer)
 
 	expectedErr := errors.New("task-err")
 	fakeContainer.NewTaskReturns(nil, expectedErr)
@@ -116,8 +116,8 @@ func (s *BackendSuite) TestCreateContainerNewTaskFailure() {
 }
 
 func (s *BackendSuite) TestCreateContainerTaskStartFailure() {
-	fakeTask := new(libcontainerdfakes.FakeTask)
-	fakeContainer := new(libcontainerdfakes.FakeContainer)
+	fakeTask := new(containerdadapterfakes.FakeTask)
+	fakeContainer := new(containerdadapterfakes.FakeContainer)
 
 	s.client.NewContainerReturns(fakeContainer, nil)
 	fakeContainer.NewTaskReturns(fakeTask, nil)
@@ -130,8 +130,8 @@ func (s *BackendSuite) TestCreateContainerTaskStartFailure() {
 }
 
 func (s *BackendSuite) TestCreateContainerSetsHandle() {
-	fakeTask := new(libcontainerdfakes.FakeTask)
-	fakeContainer := new(libcontainerdfakes.FakeContainer)
+	fakeTask := new(containerdadapterfakes.FakeTask)
+	fakeContainer := new(containerdadapterfakes.FakeContainer)
 
 	fakeContainer.IDReturns("handle")
 	fakeContainer.NewTaskReturns(fakeTask, nil)
@@ -188,8 +188,8 @@ func (s *BackendSuite) TestContainersWithProperProperties() {
 }
 
 func (s *BackendSuite) TestContainersConversion() {
-	fakeContainer1 := new(libcontainerdfakes.FakeContainer)
-	fakeContainer2 := new(libcontainerdfakes.FakeContainer)
+	fakeContainer1 := new(containerdadapterfakes.FakeContainer)
+	fakeContainer2 := new(containerdadapterfakes.FakeContainer)
 
 	s.client.ContainersReturns([]containerd.Container{
 		fakeContainer1, fakeContainer2,
@@ -207,7 +207,7 @@ func (s *BackendSuite) TestLookupEmptyHandleError() {
 }
 
 func (s *BackendSuite) TestLookupCallGetContainerWithHandle() {
-	fakeContainer := new(libcontainerdfakes.FakeContainer)
+	fakeContainer := new(containerdadapterfakes.FakeContainer)
 	fakeContainer.IDReturns("handle")
 	s.client.GetContainerReturns(fakeContainer, nil)
 
@@ -219,7 +219,7 @@ func (s *BackendSuite) TestLookupCallGetContainerWithHandle() {
 }
 
 func (s *BackendSuite) TestLookupGetContainerError() {
-	fakeContainer := new(libcontainerdfakes.FakeContainer)
+	fakeContainer := new(containerdadapterfakes.FakeContainer)
 	fakeContainer.IDReturns("handle")
 	s.client.GetContainerReturns(fakeContainer, nil)
 
@@ -245,7 +245,7 @@ func (s *BackendSuite) TestLookupGetNoContainerReturned() {
 }
 
 func (s *BackendSuite) TestLookupGetContainer() {
-	fakeContainer := new(libcontainerdfakes.FakeContainer)
+	fakeContainer := new(containerdadapterfakes.FakeContainer)
 	fakeContainer.IDReturns("handle")
 	s.client.GetContainerReturns(fakeContainer, nil)
 	container, err := s.backend.Lookup("handle")
@@ -267,7 +267,7 @@ func (s *BackendSuite) TestDestroyGetContainerError() {
 }
 
 func (s *BackendSuite) TestDestroyGetTaskError() {
-	fakeContainer := new(libcontainerdfakes.FakeContainer)
+	fakeContainer := new(containerdadapterfakes.FakeContainer)
 
 	s.client.GetContainerReturns(fakeContainer, nil)
 
@@ -279,7 +279,7 @@ func (s *BackendSuite) TestDestroyGetTaskError() {
 }
 
 func (s *BackendSuite) TestDestroyGetTaskErrorNotFoundAndDeleteFails() {
-	fakeContainer := new(libcontainerdfakes.FakeContainer)
+	fakeContainer := new(containerdadapterfakes.FakeContainer)
 
 	s.client.GetContainerReturns(fakeContainer, nil)
 	fakeContainer.TaskReturns(nil, errdefs.ErrNotFound)
@@ -292,7 +292,7 @@ func (s *BackendSuite) TestDestroyGetTaskErrorNotFoundAndDeleteFails() {
 }
 
 func (s *BackendSuite) TestDestroyGetTaskErrorNotFoundAndDeleteSucceeds() {
-	fakeContainer := new(libcontainerdfakes.FakeContainer)
+	fakeContainer := new(containerdadapterfakes.FakeContainer)
 
 	s.client.GetContainerReturns(fakeContainer, nil)
 	fakeContainer.TaskReturns(nil, errdefs.ErrNotFound)
@@ -304,8 +304,8 @@ func (s *BackendSuite) TestDestroyGetTaskErrorNotFoundAndDeleteSucceeds() {
 }
 
 func (s *BackendSuite) TestDestroyKillTaskFails() {
-	fakeContainer := new(libcontainerdfakes.FakeContainer)
-	fakeTask := new(libcontainerdfakes.FakeTask)
+	fakeContainer := new(containerdadapterfakes.FakeContainer)
+	fakeTask := new(containerdadapterfakes.FakeTask)
 
 	s.client.GetContainerReturns(fakeContainer, nil)
 	fakeContainer.TaskReturns(fakeTask, nil)
@@ -320,8 +320,8 @@ func (s *BackendSuite) TestDestroyKillTaskFails() {
 }
 
 func (s *BackendSuite) TestDestroyRemoveNetworkFails() {
-	fakeContainer := new(libcontainerdfakes.FakeContainer)
-	fakeTask := new(libcontainerdfakes.FakeTask)
+	fakeContainer := new(containerdadapterfakes.FakeContainer)
+	fakeTask := new(containerdadapterfakes.FakeTask)
 
 	s.client.GetContainerReturns(fakeContainer, nil)
 	fakeContainer.TaskReturns(fakeTask, nil)
@@ -334,8 +334,8 @@ func (s *BackendSuite) TestDestroyRemoveNetworkFails() {
 }
 
 func (s *BackendSuite) TestDestroyDeleteTaskFails() {
-	fakeContainer := new(libcontainerdfakes.FakeContainer)
-	fakeTask := new(libcontainerdfakes.FakeTask)
+	fakeContainer := new(containerdadapterfakes.FakeContainer)
+	fakeTask := new(containerdadapterfakes.FakeTask)
 
 	s.client.GetContainerReturns(fakeContainer, nil)
 	fakeContainer.TaskReturns(fakeTask, nil)
@@ -348,8 +348,8 @@ func (s *BackendSuite) TestDestroyDeleteTaskFails() {
 }
 
 func (s *BackendSuite) TestDestroyContainerDeleteFailsAndDeleteTaskSucceeds() {
-	fakeContainer := new(libcontainerdfakes.FakeContainer)
-	fakeTask := new(libcontainerdfakes.FakeTask)
+	fakeContainer := new(containerdadapterfakes.FakeContainer)
+	fakeTask := new(containerdadapterfakes.FakeTask)
 
 	s.client.GetContainerReturns(fakeContainer, nil)
 	fakeContainer.TaskReturns(fakeTask, nil)
@@ -362,8 +362,8 @@ func (s *BackendSuite) TestDestroyContainerDeleteFailsAndDeleteTaskSucceeds() {
 }
 
 func (s *BackendSuite) TestDestroySucceeds() {
-	fakeContainer := new(libcontainerdfakes.FakeContainer)
-	fakeTask := new(libcontainerdfakes.FakeTask)
+	fakeContainer := new(containerdadapterfakes.FakeContainer)
+	fakeTask := new(containerdadapterfakes.FakeTask)
 	s.client.GetContainerReturns(fakeContainer, nil)
 	fakeContainer.TaskReturns(fakeTask, nil)
 

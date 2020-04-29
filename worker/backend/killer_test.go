@@ -7,7 +7,7 @@ import (
 
 	"github.com/concourse/concourse/worker/backend"
 	"github.com/concourse/concourse/worker/backend/backendfakes"
-	"github.com/concourse/concourse/worker/backend/libcontainerd/libcontainerdfakes"
+	"github.com/concourse/concourse/worker/backend/containerdadapter/containerdadapterfakes"
 	"github.com/containerd/containerd"
 	"github.com/containerd/containerd/runtime/v2/runc/options"
 	"github.com/containerd/typeurl"
@@ -19,13 +19,13 @@ type KillerSuite struct {
 	suite.Suite
 	*require.Assertions
 
-	task          *libcontainerdfakes.FakeTask
+	task          *containerdadapterfakes.FakeTask
 	processKiller *backendfakes.FakeProcessKiller
 	killer        backend.Killer
 }
 
 func (s *KillerSuite) SetupTest() {
-	s.task = new(libcontainerdfakes.FakeTask)
+	s.task = new(containerdadapterfakes.FakeTask)
 	s.processKiller = new(backendfakes.FakeProcessKiller)
 	s.killer = backend.NewKiller(
 		backend.WithProcessKiller(s.processKiller),

@@ -12,7 +12,7 @@ import (
 
 	"code.cloudfoundry.org/garden"
 	"github.com/concourse/concourse/worker/backend"
-	"github.com/concourse/concourse/worker/backend/libcontainerd"
+	"github.com/concourse/concourse/worker/backend/containerdadapter"
 	"github.com/concourse/concourse/worker/workercmd"
 	"github.com/containerd/containerd"
 	"github.com/stretchr/testify/require"
@@ -25,7 +25,7 @@ type IntegrationSuite struct {
 	*require.Assertions
 
 	backend           backend.Backend
-	client            *libcontainerd.Client
+	client            *containerdadapter.Client
 	containerdProcess ifrit.Process
 	rootfs            string
 	stderr            bytes.Buffer
@@ -91,7 +91,7 @@ func (s *IntegrationSuite) SetupTest() {
 	)
 
 	s.backend, err = backend.New(
-		libcontainerd.New(
+		containerdadapter.New(
 			s.containerdSocket(),
 			namespace,
 			requestTimeout,
@@ -364,7 +364,7 @@ func (s *IntegrationSuite) TestCustomDNS() {
 
 	networkOpt := backend.WithNetwork(network)
 	customBackend, err := backend.New(
-		libcontainerd.New(
+		containerdadapter.New(
 			s.containerdSocket(),
 			namespace,
 			requestTimeout,

@@ -11,7 +11,7 @@ import (
 	"time"
 
 	"code.cloudfoundry.org/garden"
-	"github.com/concourse/concourse/worker/backend/libcontainerd"
+	"github.com/concourse/concourse/worker/backend/containerdadapter"
 	bespec "github.com/concourse/concourse/worker/backend/spec"
 	"github.com/containerd/containerd"
 	"github.com/containerd/containerd/cio"
@@ -23,7 +23,7 @@ var _ garden.Backend = (*Backend)(nil)
 // Backend implements a Garden backend backed by `containerd`.
 //
 type Backend struct {
-	client        libcontainerd.Client
+	client        containerdadapter.Client
 	killer        Killer
 	network       Network
 	rootfsManager RootfsManager
@@ -73,7 +73,7 @@ func WithNetwork(n Network) BackendOpt {
 
 // New instantiates a Backend with tweakable configurations passed as Config.
 //
-func New(client libcontainerd.Client, opts ...BackendOpt) (b Backend, err error) {
+func New(client containerdadapter.Client, opts ...BackendOpt) (b Backend, err error) {
 	if client == nil {
 		err = ErrInvalidInput("nil client")
 		return

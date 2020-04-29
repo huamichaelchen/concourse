@@ -6,7 +6,7 @@ import (
 	"code.cloudfoundry.org/garden"
 	"github.com/concourse/concourse/worker/backend"
 	"github.com/concourse/concourse/worker/backend/backendfakes"
-	"github.com/concourse/concourse/worker/backend/libcontainerd/libcontainerdfakes"
+	"github.com/concourse/concourse/worker/backend/containerdadapter/containerdadapterfakes"
 	"github.com/containerd/containerd"
 	"github.com/opencontainers/runtime-spec/specs-go"
 	"github.com/stretchr/testify/require"
@@ -18,17 +18,17 @@ type ContainerSuite struct {
 	*require.Assertions
 
 	container           *backend.Container
-	containerdContainer *libcontainerdfakes.FakeContainer
-	containerdProcess   *libcontainerdfakes.FakeProcess
-	containerdTask      *libcontainerdfakes.FakeTask
+	containerdContainer *containerdadapterfakes.FakeContainer
+	containerdProcess   *containerdadapterfakes.FakeProcess
+	containerdTask      *containerdadapterfakes.FakeTask
 	rootfsManager       *backendfakes.FakeRootfsManager
 	killer              *backendfakes.FakeKiller
 }
 
 func (s *ContainerSuite) SetupTest() {
-	s.containerdContainer = new(libcontainerdfakes.FakeContainer)
-	s.containerdProcess = new(libcontainerdfakes.FakeProcess)
-	s.containerdTask = new(libcontainerdfakes.FakeTask)
+	s.containerdContainer = new(containerdadapterfakes.FakeContainer)
+	s.containerdProcess = new(containerdadapterfakes.FakeProcess)
+	s.containerdTask = new(containerdadapterfakes.FakeTask)
 	s.rootfsManager = new(backendfakes.FakeRootfsManager)
 	s.killer = new(backendfakes.FakeKiller)
 
