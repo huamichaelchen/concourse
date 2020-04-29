@@ -30,6 +30,8 @@ type Volume interface {
 	InitializeArtifact(name string, buildID int) (db.WorkerArtifact, error)
 
 	CreateChildForContainer(db.CreatingContainer, string) (db.CreatingVolume, error)
+	GetVolumeResourceType() (*db.VolumeResourceType, error)
+	FindSiblingVolumeHandleOnWorker(workerName string)(string, bool, error)
 
 	WorkerName() string
 	Destroy() error
@@ -153,4 +155,12 @@ func (v *volume) InitializeTaskCache(
 
 func (v *volume) CreateChildForContainer(creatingContainer db.CreatingContainer, mountPath string) (db.CreatingVolume, error) {
 	return v.dbVolume.CreateChildForContainer(creatingContainer, mountPath)
+}
+
+func (v *volume) GetVolumeResourceType() (*db.VolumeResourceType, error) {
+	return v.dbVolume.ResourceType()
+}
+
+func (v *volume) FindSiblingVolumeHandleOnWorker(workerName string)(string, bool, error) {
+	return v.dbVolume.FindSiblingVolumeHandleOnWorker(workerName)
 }

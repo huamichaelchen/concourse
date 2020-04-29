@@ -158,6 +158,7 @@ type CreatedVolume interface {
 	ContainerHandle() string
 	ParentHandle() string
 	ResourceType() (*VolumeResourceType, error)
+	FindSiblingVolumeHandleOnWorker(workerName string)(string, bool, error)
 	BaseResourceType() (*UsedWorkerBaseResourceType, error)
 	TaskIdentifier() (string, string, string, error)
 }
@@ -200,6 +201,34 @@ func (volume *createdVolume) ResourceType() (*VolumeResourceType, error) {
 	}
 
 	return volume.findVolumeResourceTypeByCacheID(volume.resourceCacheID)
+}
+
+func (volume *createdVolume) FindSiblingVolumeHandleOnWorker( workerName string) (string, bool, error){
+	if volume.resourceCacheID == 0 {
+		return "", false, errors.New("resourceCacheId not set")
+	}
+
+	var handle string
+
+	err := psql.Select("v.handle").
+		From("volumes v").
+		LeftJoin("worker_resource_caches wrc on wrc.id = v.worker_resource_cache_id").
+		Where(sq.Eq{
+			"wrc.resource_cache_id": volume.resourceCacheID,
+			"v.worker_name": workerName,
+		}).
+		RunWith(volume.conn).
+		QueryRow().
+		Scan(&handle)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return "", false, nil
+		}
+		return "", false, err
+	}
+
+	return handle, true, nil
+
 }
 
 func (volume *createdVolume) BaseResourceType() (*UsedWorkerBaseResourceType, error) {
@@ -335,6 +364,7 @@ func (volume *createdVolume) findWorkerBaseResourceTypeByBaseResourceTypeID(base
 
 	return &UsedWorkerBaseResourceType{
 		ID:         id,
+		BaseResourceTypeID: baseResourceTypeID,
 		Name:       name,
 		Version:    version,
 		WorkerName: volume.workerName,
