@@ -65,6 +65,17 @@ func (bt *Tracker) Track() error {
 	return nil
 }
 
+func (bt *Tracker) Running() bool {
+	running := false
+
+	bt.running.Range(func(key, val interface{}) bool {
+		running = true
+		return true
+	})
+
+	return running
+}
+
 func (bt *Tracker) Release() {
 	rLog := bt.logger.Session("release")
 	rLog.Debug("start")

@@ -10,6 +10,10 @@ import (
 )
 
 func TestBuilds(t *testing.T) {
+	suite.Run(t, &TrackerSuite{
+		Assertions: require.New(t),
+	})
+
 	suite.Run(t, &PlannerSuite{
 		Assertions: require.New(t),
 	})
