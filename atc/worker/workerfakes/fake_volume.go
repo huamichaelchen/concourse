@@ -47,32 +47,15 @@ type FakeVolume struct {
 	destroyReturnsOnCall map[int]struct {
 		result1 error
 	}
-	FindSiblingVolumeHandleOnWorkerStub        func(string) (string, bool, error)
-	findSiblingVolumeHandleOnWorkerMutex       sync.RWMutex
-	findSiblingVolumeHandleOnWorkerArgsForCall []struct {
-		arg1 string
+	GetResourceCacheIdStub        func() int
+	getResourceCacheIdMutex       sync.RWMutex
+	getResourceCacheIdArgsForCall []struct {
 	}
-	findSiblingVolumeHandleOnWorkerReturns struct {
-		result1 string
-		result2 bool
-		result3 error
+	getResourceCacheIdReturns struct {
+		result1 int
 	}
-	findSiblingVolumeHandleOnWorkerReturnsOnCall map[int]struct {
-		result1 string
-		result2 bool
-		result3 error
-	}
-	GetVolumeResourceTypeStub        func() (*db.VolumeResourceType, error)
-	getVolumeResourceTypeMutex       sync.RWMutex
-	getVolumeResourceTypeArgsForCall []struct {
-	}
-	getVolumeResourceTypeReturns struct {
-		result1 *db.VolumeResourceType
-		result2 error
-	}
-	getVolumeResourceTypeReturnsOnCall map[int]struct {
-		result1 *db.VolumeResourceType
-		result2 error
+	getResourceCacheIdReturnsOnCall map[int]struct {
+		result1 int
 	}
 	HandleStub        func() string
 	handleMutex       sync.RWMutex
@@ -380,125 +363,56 @@ func (fake *FakeVolume) DestroyReturnsOnCall(i int, result1 error) {
 	}{result1}
 }
 
-func (fake *FakeVolume) FindSiblingVolumeHandleOnWorker(arg1 string) (string, bool, error) {
-	fake.findSiblingVolumeHandleOnWorkerMutex.Lock()
-	ret, specificReturn := fake.findSiblingVolumeHandleOnWorkerReturnsOnCall[len(fake.findSiblingVolumeHandleOnWorkerArgsForCall)]
-	fake.findSiblingVolumeHandleOnWorkerArgsForCall = append(fake.findSiblingVolumeHandleOnWorkerArgsForCall, struct {
-		arg1 string
-	}{arg1})
-	fake.recordInvocation("FindSiblingVolumeHandleOnWorker", []interface{}{arg1})
-	fake.findSiblingVolumeHandleOnWorkerMutex.Unlock()
-	if fake.FindSiblingVolumeHandleOnWorkerStub != nil {
-		return fake.FindSiblingVolumeHandleOnWorkerStub(arg1)
-	}
-	if specificReturn {
-		return ret.result1, ret.result2, ret.result3
-	}
-	fakeReturns := fake.findSiblingVolumeHandleOnWorkerReturns
-	return fakeReturns.result1, fakeReturns.result2, fakeReturns.result3
-}
-
-func (fake *FakeVolume) FindSiblingVolumeHandleOnWorkerCallCount() int {
-	fake.findSiblingVolumeHandleOnWorkerMutex.RLock()
-	defer fake.findSiblingVolumeHandleOnWorkerMutex.RUnlock()
-	return len(fake.findSiblingVolumeHandleOnWorkerArgsForCall)
-}
-
-func (fake *FakeVolume) FindSiblingVolumeHandleOnWorkerCalls(stub func(string) (string, bool, error)) {
-	fake.findSiblingVolumeHandleOnWorkerMutex.Lock()
-	defer fake.findSiblingVolumeHandleOnWorkerMutex.Unlock()
-	fake.FindSiblingVolumeHandleOnWorkerStub = stub
-}
-
-func (fake *FakeVolume) FindSiblingVolumeHandleOnWorkerArgsForCall(i int) string {
-	fake.findSiblingVolumeHandleOnWorkerMutex.RLock()
-	defer fake.findSiblingVolumeHandleOnWorkerMutex.RUnlock()
-	argsForCall := fake.findSiblingVolumeHandleOnWorkerArgsForCall[i]
-	return argsForCall.arg1
-}
-
-func (fake *FakeVolume) FindSiblingVolumeHandleOnWorkerReturns(result1 string, result2 bool, result3 error) {
-	fake.findSiblingVolumeHandleOnWorkerMutex.Lock()
-	defer fake.findSiblingVolumeHandleOnWorkerMutex.Unlock()
-	fake.FindSiblingVolumeHandleOnWorkerStub = nil
-	fake.findSiblingVolumeHandleOnWorkerReturns = struct {
-		result1 string
-		result2 bool
-		result3 error
-	}{result1, result2, result3}
-}
-
-func (fake *FakeVolume) FindSiblingVolumeHandleOnWorkerReturnsOnCall(i int, result1 string, result2 bool, result3 error) {
-	fake.findSiblingVolumeHandleOnWorkerMutex.Lock()
-	defer fake.findSiblingVolumeHandleOnWorkerMutex.Unlock()
-	fake.FindSiblingVolumeHandleOnWorkerStub = nil
-	if fake.findSiblingVolumeHandleOnWorkerReturnsOnCall == nil {
-		fake.findSiblingVolumeHandleOnWorkerReturnsOnCall = make(map[int]struct {
-			result1 string
-			result2 bool
-			result3 error
-		})
-	}
-	fake.findSiblingVolumeHandleOnWorkerReturnsOnCall[i] = struct {
-		result1 string
-		result2 bool
-		result3 error
-	}{result1, result2, result3}
-}
-
-func (fake *FakeVolume) GetVolumeResourceType() (*db.VolumeResourceType, error) {
-	fake.getVolumeResourceTypeMutex.Lock()
-	ret, specificReturn := fake.getVolumeResourceTypeReturnsOnCall[len(fake.getVolumeResourceTypeArgsForCall)]
-	fake.getVolumeResourceTypeArgsForCall = append(fake.getVolumeResourceTypeArgsForCall, struct {
+func (fake *FakeVolume) GetResourceCacheId() int {
+	fake.getResourceCacheIdMutex.Lock()
+	ret, specificReturn := fake.getResourceCacheIdReturnsOnCall[len(fake.getResourceCacheIdArgsForCall)]
+	fake.getResourceCacheIdArgsForCall = append(fake.getResourceCacheIdArgsForCall, struct {
 	}{})
-	fake.recordInvocation("GetVolumeResourceType", []interface{}{})
-	fake.getVolumeResourceTypeMutex.Unlock()
-	if fake.GetVolumeResourceTypeStub != nil {
-		return fake.GetVolumeResourceTypeStub()
+	fake.recordInvocation("GetResourceCacheId", []interface{}{})
+	fake.getResourceCacheIdMutex.Unlock()
+	if fake.GetResourceCacheIdStub != nil {
+		return fake.GetResourceCacheIdStub()
 	}
 	if specificReturn {
-		return ret.result1, ret.result2
+		return ret.result1
 	}
-	fakeReturns := fake.getVolumeResourceTypeReturns
-	return fakeReturns.result1, fakeReturns.result2
+	fakeReturns := fake.getResourceCacheIdReturns
+	return fakeReturns.result1
 }
 
-func (fake *FakeVolume) GetVolumeResourceTypeCallCount() int {
-	fake.getVolumeResourceTypeMutex.RLock()
-	defer fake.getVolumeResourceTypeMutex.RUnlock()
-	return len(fake.getVolumeResourceTypeArgsForCall)
+func (fake *FakeVolume) GetResourceCacheIdCallCount() int {
+	fake.getResourceCacheIdMutex.RLock()
+	defer fake.getResourceCacheIdMutex.RUnlock()
+	return len(fake.getResourceCacheIdArgsForCall)
 }
 
-func (fake *FakeVolume) GetVolumeResourceTypeCalls(stub func() (*db.VolumeResourceType, error)) {
-	fake.getVolumeResourceTypeMutex.Lock()
-	defer fake.getVolumeResourceTypeMutex.Unlock()
-	fake.GetVolumeResourceTypeStub = stub
+func (fake *FakeVolume) GetResourceCacheIdCalls(stub func() int) {
+	fake.getResourceCacheIdMutex.Lock()
+	defer fake.getResourceCacheIdMutex.Unlock()
+	fake.GetResourceCacheIdStub = stub
 }
 
-func (fake *FakeVolume) GetVolumeResourceTypeReturns(result1 *db.VolumeResourceType, result2 error) {
-	fake.getVolumeResourceTypeMutex.Lock()
-	defer fake.getVolumeResourceTypeMutex.Unlock()
-	fake.GetVolumeResourceTypeStub = nil
-	fake.getVolumeResourceTypeReturns = struct {
-		result1 *db.VolumeResourceType
-		result2 error
-	}{result1, result2}
+func (fake *FakeVolume) GetResourceCacheIdReturns(result1 int) {
+	fake.getResourceCacheIdMutex.Lock()
+	defer fake.getResourceCacheIdMutex.Unlock()
+	fake.GetResourceCacheIdStub = nil
+	fake.getResourceCacheIdReturns = struct {
+		result1 int
+	}{result1}
 }
 
-func (fake *FakeVolume) GetVolumeResourceTypeReturnsOnCall(i int, result1 *db.VolumeResourceType, result2 error) {
-	fake.getVolumeResourceTypeMutex.Lock()
-	defer fake.getVolumeResourceTypeMutex.Unlock()
-	fake.GetVolumeResourceTypeStub = nil
-	if fake.getVolumeResourceTypeReturnsOnCall == nil {
-		fake.getVolumeResourceTypeReturnsOnCall = make(map[int]struct {
-			result1 *db.VolumeResourceType
-			result2 error
+func (fake *FakeVolume) GetResourceCacheIdReturnsOnCall(i int, result1 int) {
+	fake.getResourceCacheIdMutex.Lock()
+	defer fake.getResourceCacheIdMutex.Unlock()
+	fake.GetResourceCacheIdStub = nil
+	if fake.getResourceCacheIdReturnsOnCall == nil {
+		fake.getResourceCacheIdReturnsOnCall = make(map[int]struct {
+			result1 int
 		})
 	}
-	fake.getVolumeResourceTypeReturnsOnCall[i] = struct {
-		result1 *db.VolumeResourceType
-		result2 error
-	}{result1, result2}
+	fake.getResourceCacheIdReturnsOnCall[i] = struct {
+		result1 int
+	}{result1}
 }
 
 func (fake *FakeVolume) Handle() string {
@@ -1158,10 +1072,8 @@ func (fake *FakeVolume) Invocations() map[string][][]interface{} {
 	defer fake.createChildForContainerMutex.RUnlock()
 	fake.destroyMutex.RLock()
 	defer fake.destroyMutex.RUnlock()
-	fake.findSiblingVolumeHandleOnWorkerMutex.RLock()
-	defer fake.findSiblingVolumeHandleOnWorkerMutex.RUnlock()
-	fake.getVolumeResourceTypeMutex.RLock()
-	defer fake.getVolumeResourceTypeMutex.RUnlock()
+	fake.getResourceCacheIdMutex.RLock()
+	defer fake.getResourceCacheIdMutex.RUnlock()
 	fake.handleMutex.RLock()
 	defer fake.handleMutex.RUnlock()
 	fake.initializeArtifactMutex.RLock()

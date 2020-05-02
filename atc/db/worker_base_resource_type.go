@@ -13,7 +13,6 @@ type WorkerBaseResourceType struct {
 
 type UsedWorkerBaseResourceType struct {
 	ID      int
-	BaseResourceTypeID int
 	Name    string
 	Version string
 
@@ -21,9 +20,9 @@ type UsedWorkerBaseResourceType struct {
 }
 
 func (workerBaseResourceType WorkerBaseResourceType) Find(runner sq.Runner) (*UsedWorkerBaseResourceType, bool, error) {
-	var id, baseResoureceTypeID int
+	var id int
 	var version string
-	err := psql.Select("wbrt.id, wbrt.base_resource_type_id, wbrt.version").
+	err := psql.Select("wbrt.id, wbrt.version").
 		From("worker_base_resource_types wbrt").
 		LeftJoin("base_resource_types brt ON brt.id = wbrt.base_resource_type_id").
 		LeftJoin("workers w ON w.name = wbrt.worker_name").
@@ -33,9 +32,7 @@ func (workerBaseResourceType WorkerBaseResourceType) Find(runner sq.Runner) (*Us
 		}).
 		RunWith(runner).
 		QueryRow().
-		Scan(&id,
-			&baseResoureceTypeID,
-			&version)
+		Scan(&id, &version)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, false, nil
@@ -46,7 +43,6 @@ func (workerBaseResourceType WorkerBaseResourceType) Find(runner sq.Runner) (*Us
 
 	return &UsedWorkerBaseResourceType{
 		ID:         id,
-		BaseResourceTypeID: baseResoureceTypeID,
 		Name:       workerBaseResourceType.Name,
 		Version:    version,
 		WorkerName: workerBaseResourceType.WorkerName,

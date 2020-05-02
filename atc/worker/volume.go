@@ -26,12 +26,11 @@ type Volume interface {
 	COWStrategy() baggageclaim.COWStrategy
 
 	InitializeResourceCache(db.UsedResourceCache) error
+	GetResourceCacheId() int
 	InitializeTaskCache(logger lager.Logger, jobID int, stepName string, path string, privileged bool) error
 	InitializeArtifact(name string, buildID int) (db.WorkerArtifact, error)
 
 	CreateChildForContainer(db.CreatingContainer, string) (db.CreatingVolume, error)
-	GetVolumeResourceType() (*db.VolumeResourceType, error)
-	FindSiblingVolumeHandleOnWorker(workerName string)(string, bool, error)
 
 	WorkerName() string
 	Destroy() error
@@ -116,6 +115,10 @@ func (v *volume) InitializeResourceCache(urc db.UsedResourceCache) error {
 	return v.dbVolume.InitializeResourceCache(urc)
 }
 
+func (v *volume) GetResourceCacheId() int {
+	return v.dbVolume.GetResourceCacheID()
+}
+
 func (v *volume) InitializeArtifact(name string, buildID int) (db.WorkerArtifact, error) {
 	return v.dbVolume.InitializeArtifact(name, buildID)
 }
@@ -155,12 +158,4 @@ func (v *volume) InitializeTaskCache(
 
 func (v *volume) CreateChildForContainer(creatingContainer db.CreatingContainer, mountPath string) (db.CreatingVolume, error) {
 	return v.dbVolume.CreateChildForContainer(creatingContainer, mountPath)
-}
-
-func (v *volume) GetVolumeResourceType() (*db.VolumeResourceType, error) {
-	return v.dbVolume.ResourceType()
-}
-
-func (v *volume) FindSiblingVolumeHandleOnWorker(workerName string)(string, bool, error) {
-	return v.dbVolume.FindSiblingVolumeHandleOnWorker(workerName)
 }

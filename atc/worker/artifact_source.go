@@ -106,7 +106,21 @@ func (source *artifactSource) StreamFile(
 }
 
 func (source *artifactSource) ExistsOn(logger lager.Logger, worker Worker) (Volume, bool, error) {
-	return worker.LookupVolume(logger, source.artifact.ID())
+	if source.volume.WorkerName() == worker.Name() {
+		return source.volume, true, nil
+	}
+
+	//If Volume has a resourceCache
+	resourceCache, found, err := worker.FindResourceCacheForVolume(source.volume)
+	if err != nil {
+		return nil, false, err
+	}
+	if found {
+		return worker.FindVolumeForResourceCache(logger, resourceCache)
+	}else {
+		return nil, false, nil
+	}
+
 }
 
 type cacheArtifactSource struct {

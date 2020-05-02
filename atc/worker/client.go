@@ -250,6 +250,13 @@ func (client *client) RunTaskStep(
 		return TaskResult{}, err
 	}
 
+	if containerSpec.ImageSpec.ImageArtifact != nil {
+		err = client.wireImageVolume(logger, &containerSpec.ImageSpec)
+		if err != nil {
+			return TaskResult{}, err
+		}
+	}
+
 	chosenWorker, err := client.chooseTaskWorker(
 		ctx,
 		logger,
@@ -262,13 +269,6 @@ func (client *client) RunTaskStep(
 	)
 	if err != nil {
 		return TaskResult{}, err
-	}
-
-	if containerSpec.ImageSpec.ImageArtifact != nil {
-		err = client.wireImageVolume(logger, &containerSpec.ImageSpec, chosenWorker.Name())
-		if err != nil {
-			return TaskResult{}, err
-		}
 	}
 
 	if strategy.ModifiesActiveTasks() {
@@ -671,41 +671,21 @@ func (client *client) wireInputsAndCaches(logger lager.Logger, spec *ContainerSp
 	return nil
 }
 
-func (client *client) wireImageVolume(logger lager.Logger, spec *ImageSpec, workerName string) error {
+func (client *client) wireImageVolume(logger lager.Logger, spec *ImageSpec) error {
 
 	imageArtifact := spec.ImageArtifact
 
 	artifactVolume, found, err := client.FindVolume(logger, 0, imageArtifact.ID())
+	if err != nil {
+		return err
+	}
 	if !found {
 		return fmt.Errorf("volume not found for artifact id %v type %T", imageArtifact.ID(), imageArtifact)
 	}
 
-	if workerName == artifactVolume.WorkerName() {
-		spec.ImageArtifactSource = NewStreamableArtifactSource(imageArtifact, artifactVolume, client.compression)
-		return nil
-	}
-
-	localVolumeHandle, found, err := artifactVolume.FindSiblingVolumeHandleOnWorker(workerName)
-	if err != nil {
-		return fmt.Errorf("failed to find sibling volume for artifact id %v type %T with %v", imageArtifact.ID(), imageArtifact, err)
-	}
-
-	if found {
-		localArtifactVolume, found, err := client.FindVolume(logger, 0, localVolumeHandle)
-		if err != nil {
-			return fmt.Errorf("sibling volume not found for artifact id %v type %T due to %v", imageArtifact.ID(), imageArtifact, err)
-		}
-		if found {
-			logger.Info("localArtifactVolume found for task image", lager.Data{"handle": localVolumeHandle})
-			spec.ImageArtifactSource = NewStreamableArtifactSource(runtime.GetArtifact{localVolumeHandle}, localArtifactVolume, client.compression)
-			return nil
-		}
-	}
-
 	spec.ImageArtifactSource = NewStreamableArtifactSource(imageArtifact, artifactVolume, client.compression)
+
 	return nil
-
-
 }
 
 func (client *client) StreamFileFromArtifact(
